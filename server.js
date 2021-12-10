@@ -18,6 +18,8 @@ connection.once('open', function (){
     console.log('mongodb connection established successfully');
 });
 
+
+
 app.use('/messages', messageRoutes);
 
 app.listen(port, ()=>{
