@@ -20,18 +20,17 @@ connection.once('open', function (){
 
 messageRoutes.route('/').get(function(req,res){
     Message.find(function(err, messages){
-        if (err){
+        if (err)
             console.error(err);
-        }else{
+        else
             res.json(messages);
-        }
     });
 });
 
 messageRoutes.route('/:id').get(function(req,res){
     let id = req.params.id;
     Message.findById(id, function(err, message){
-        res.json(todo);
+        res.json(message);
     });
 });
 
@@ -45,6 +44,23 @@ message.save()
             res.status(400).send('posting message failed');
         });
 });
+
+messageRoutes.route('/edit/:id').post(function(req,res){
+    Message.findById(req.params.id, function(err, message){
+        if(!message)
+            res.status(404).send('message is not found')
+        else
+            message.message_title = req.body.message_title;
+            message.message_content = req.body.message_content;
+
+            message.save().then(message => {
+                res.json('Message edited')
+            })
+            .catch(err => {
+                res.status(400).send("Editing Failed")
+            })
+    })
+})
 
 app.use('/messages', messageRoutes);
 
