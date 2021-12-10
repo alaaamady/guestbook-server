@@ -35,6 +35,16 @@ messageRoutes.route('/:id').get(function(req,res){
     });
 });
 
+let message = new Message(req.body);
+message.save()
+        .then(message => {
+            res.status(200).json({'message': "message posted successfully"});
+        })
+        .catch(err => {
+            res.status(400).send('posting message failed');
+        });
+});
+
 app.use('/messages', messageRoutes);
 
 app.listen(port, ()=>{
