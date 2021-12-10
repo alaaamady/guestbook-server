@@ -18,7 +18,15 @@ connection.once('open', function (){
     console.log('mongodb connection established successfully');
 });
 
-
+messageRoutes.route('/').get(function(req,res){
+    Message.find(function(err, messages){
+        if (err){
+            console.error(err);
+        }else{
+            res.json(messages);
+        }
+    });
+});
 
 app.use('/messages', messageRoutes);
 
