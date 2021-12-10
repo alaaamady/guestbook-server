@@ -35,6 +35,7 @@ messageRoutes.route('/:id').get(function(req,res){
     });
 });
 
+messageRoutes.route('/create').post(function(req,res){
 let message = new Message(req.body);
 message.save()
         .then(message => {
