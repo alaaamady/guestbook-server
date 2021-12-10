@@ -28,6 +28,13 @@ messageRoutes.route('/').get(function(req,res){
     });
 });
 
+messageRoutes.route('/:id').get(function(req,res){
+    let id = req.params.id;
+    Message.findById(id, function(err, message){
+        res.json(todo);
+    });
+});
+
 app.use('/messages', messageRoutes);
 
 app.listen(port, ()=>{
