@@ -3,13 +3,16 @@ const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const messageRoutes = express.Router();
 const port = 5000;
 
-let Message = require("./message.model");
-let User = require("./user.model");
+let Message = require("./models/message.model");
+let User = require("./models/user.model");
 
 app.use(cors());
+const urlEncodedParser = bodyParser.urlencoded({ extended: false });
 app.use(bodyParser.json());
 
 mongoose.connect("mongodb://127.0.0.1:27017/guestbook", {
@@ -19,6 +22,25 @@ const connection = mongoose.connection;
 
 connection.once("open", function () {
   console.log("mongodb connection established successfully");
+});
+
+app.post("/signup", async (req, res) => {
+  const user = req.body;
+
+  const takenUsername = await User.findOne({ username: user.username });
+  if (takenUsername) {
+    res.json({ message: "Username has already been taken" });
+  } else {
+    user.password = await bcrypt.hash(req.body.password, 10);
+
+    const newUser = new User({
+      username: user.username.toLowerCase(),
+      password: user.password,
+    });
+
+    newUser.save();
+    res.json({ message: "new user has been created successfuly" });
+  }
 });
 
 messageRoutes.route("/").get(function (req, res) {
