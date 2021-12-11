@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -6,7 +7,7 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const messageRoutes = express.Router();
-const port = 5000;
+const port = process.env.PORT;
 
 let Message = require("./models/message.model");
 let User = require("./models/user.model");
@@ -41,6 +42,41 @@ app.post("/signup", async (req, res) => {
     newUser.save();
     res.json({ message: "new user has been created successfuly" });
   }
+});
+
+app.post("/login", (req, res) => {
+  const userLoggingIn = req.body;
+  User.findOne({ username: userLoggingIn.username }).then((dbUser) => {
+    if (!dbUser) {
+      return res.json({ message: "User doesn't exist" });
+    }
+    bcrypt
+      .compare(userLoggingIn.password, dbUser.password)
+      .then((isCorrect) => {
+        if (isCorrect) {
+          const payload = {
+            id: dbUser._id,
+            username: dbUser.username,
+          };
+          jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            { expiresIn: 86400 },
+            (err, token) => {
+              if (err) return res.json({ message: err });
+              return res.json({
+                message: "Success",
+                token: "Bearer" + token,
+              });
+            }
+          );
+        } else {
+          return res.json({
+            message: "Invalid password",
+          });
+        }
+      });
+  });
 });
 
 messageRoutes.route("/").get(function (req, res) {
