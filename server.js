@@ -40,7 +40,10 @@ app.post("/signup", async (req, res) => {
     });
 
     newUser.save();
-    res.json({ message: "new user has been created successfuly" });
+    res.json({
+      message: "new user has been created successfuly",
+      isLoggedIn: true,
+    });
   }
 });
 
@@ -93,10 +96,6 @@ app.get("/isUserAuth", async (req, res, next) => {
       req.user = {};
       req.user.id = decoded.id;
       req.user.username = decoded.username;
-      return res.json({
-        isLoggedIn: true,
-        message: "authenticated successfully",
-      });
       next();
     });
   } else {
