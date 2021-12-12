@@ -9,8 +9,8 @@ const bcrypt = require("bcrypt");
 const messageRoutes = express.Router();
 const port = process.env.PORT;
 
-let Message = require("./models/message.model");
-let User = require("./models/user.model");
+const Message = require("./models/message.model");
+const User = require("./models/user.model");
 
 app.use(cors());
 const urlEncodedParser = bodyParser.urlencoded({ extended: false });
@@ -80,26 +80,6 @@ app.post("/login", (req, res) => {
   });
 });
 
-// function verifyJWT(req, res, next) {
-//   const token = req.headers["x-access-token"]?.split(" ")[1];
-
-//   if (token) {
-//     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-//       if (err)
-//         return res.json({
-//           isLoggedIn: false,
-//           message: "failed to authenticate",
-//         });
-//       req.user = {};
-//       req.user.id = decoded.id;
-//       req.user.username = decoded.username;
-//       next();
-//     });
-//   } else {
-//     res.json({ message: "Incorrect Token", isLoggedIn: false });
-//   }
-// }
-
 app.get("/isUserAuth", async (req, res, next) => {
   const token = req.headers["x-access-token"]?.split(" ")[1];
 
@@ -132,14 +112,14 @@ messageRoutes.route("/").get(function (req, res) {
 });
 
 messageRoutes.route("/:id").get(function (req, res) {
-  let id = req.params.id;
+  const id = req.params.id;
   Message.findById(id, function (err, message) {
     res.json(message);
   });
 });
 
 messageRoutes.route("/create").post(function (req, res) {
-  let message = new Message(req.body);
+  const message = new Message(req.body);
   message
     .save()
     .then((message) => {
