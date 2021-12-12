@@ -42,5 +42,8 @@
 ### What to Improve: 
 
  1. add middleware authentication checker to each private route
+ 2. add comments to the messages model
+ 3. add create comment route
+ 4. add testing
 
 
