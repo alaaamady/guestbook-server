@@ -67,6 +67,7 @@ app.post("/login", (req, res) => {
               return res.json({
                 message: "Success",
                 token: "Bearer" + token,
+                isLoggedIn: true,
               });
             }
           );
@@ -77,6 +78,50 @@ app.post("/login", (req, res) => {
         }
       });
   });
+});
+
+// function verifyJWT(req, res, next) {
+//   const token = req.headers["x-access-token"]?.split(" ")[1];
+
+//   if (token) {
+//     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+//       if (err)
+//         return res.json({
+//           isLoggedIn: false,
+//           message: "failed to authenticate",
+//         });
+//       req.user = {};
+//       req.user.id = decoded.id;
+//       req.user.username = decoded.username;
+//       next();
+//     });
+//   } else {
+//     res.json({ message: "Incorrect Token", isLoggedIn: false });
+//   }
+// }
+
+app.get("/isUserAuth", async (req, res, next) => {
+  const token = req.headers["x-access-token"]?.split(" ")[1];
+
+  if (token) {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err)
+        return res.json({
+          isLoggedIn: false,
+          message: "failed to authenticate",
+        });
+      req.user = {};
+      req.user.id = decoded.id;
+      req.user.username = decoded.username;
+      return res.json({
+        isLoggedIn: true,
+        message: "authenticated successfully",
+      });
+      next();
+    });
+  } else {
+    res.json({ message: "Incorrect Token", isLoggedIn: false });
+  }
 });
 
 messageRoutes.route("/").get(function (req, res) {
